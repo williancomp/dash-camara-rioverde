@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Parlamentars;
 
-use App\Filament\Resources\ParlamentarResource\RelationManagers\ProjetosAutorRelationManager;
+use App\Filament\Resources\Parlamentars\RelationManagers\ProjetosAutorRelationManager;
 use App\Filament\Resources\Parlamentars\Pages\CreateParlamentar;
 use App\Filament\Resources\Parlamentars\Pages\EditParlamentar;
 use App\Filament\Resources\Parlamentars\Pages\ListParlamentars;
