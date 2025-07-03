@@ -9,6 +9,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class NoticiasStatsWidget extends StatsOverviewWidget
 {
 
+    protected ?string $heading = 'Gestão de Notícias';
+
 
     protected function getStats(): array
     {

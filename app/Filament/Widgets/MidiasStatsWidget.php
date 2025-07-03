@@ -8,7 +8,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class MidiasStatsWidget extends StatsOverviewWidget
 {
-
+    protected  ?string $heading = 'Biblioteca de Mídias';
 
     protected function getStats(): array
     {

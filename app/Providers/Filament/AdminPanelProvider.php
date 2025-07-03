@@ -6,7 +6,6 @@ use App\Filament\Widgets\MapaStatsWidget;
 use App\Filament\Widgets\MidiasStatsWidget;
 use App\Filament\Widgets\NoticiasStatsWidget;
 use App\Filament\Widgets\OuvidoriaStatsWidget;
-use App\Filament\Widgets\SectionHeaderWidget;
 use App\Filament\Widgets\TransmissaoControlWidget;
 
 use Filament\Http\Middleware\Authenticate;
@@ -50,15 +49,10 @@ class AdminPanelProvider extends PanelProvider
             //->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 //AccountWidget::class,
-                SectionHeaderWidget::make(['title' => 'Centro de Transmissão', 'icon' => '📡']),
                 TransmissaoControlWidget::class,
-                SectionHeaderWidget::make(['title' => 'Gestão de Notícias', 'icon' => '📰']),
                 NoticiasStatsWidget::class,
-                SectionHeaderWidget::make(['title' => 'Biblioteca de Mídias', 'icon' => '🎥']),
                 MidiasStatsWidget::class,
-                SectionHeaderWidget::make(['title' => 'Ouvidoria Digital', 'icon' => '📢']),
                 OuvidoriaStatsWidget::class,
-                SectionHeaderWidget::make(['title' => 'Mapa da Cidade', 'icon' => '🗺️']),
                 MapaStatsWidget::class,
                 //FilamentInfoWidget::class,
             ])

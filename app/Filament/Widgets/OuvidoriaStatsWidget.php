@@ -9,6 +9,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class OuvidoriaStatsWidget extends StatsOverviewWidget
 {
 
+    protected ?string $heading = 'Ouvidoria Digital';
 
     protected function getStats(): array
     {

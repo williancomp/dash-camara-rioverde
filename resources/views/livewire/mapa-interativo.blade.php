@@ -114,7 +114,7 @@
             window.googleMapsLoading = true;
             window.initMapCallback = function() { window.googleMapsLoaded = true; initializeGlobalMap(); };
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initMapCallback&loading=async`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key={{ config('services.google-maps-key') }}&callback=initMapCallback&loading=async`;
             script.async = true; script.defer = true;
             document.head.appendChild(script);
         } else if (window.googleMapsLoaded) { initializeGlobalMap(); }

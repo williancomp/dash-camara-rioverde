@@ -9,6 +9,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class MapaStatsWidget extends StatsOverviewWidget
 {
 
+    protected ?string $heading = 'Mapa da Cidade';
+
     protected function getStats(): array
     {
         return [
