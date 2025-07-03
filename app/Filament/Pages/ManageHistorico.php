@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Forms\Components\OptimizedImageUpload;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -70,31 +71,35 @@ class ManageHistorico extends SettingsPage
                                         'codeBlock',
                                     ]),
 
-
-
-                                FileUpload::make('camara_imagem_destaque')
+                                OptimizedImageUpload::make('camara_imagem_destaque')
                                     ->label('Imagem de Destaque')
                                     ->image()
+                                    ->imageEditor()
+                                    ->multiple(false)
                                     ->directory('historico/camara')
-                                    ->maxSize(3072) // 3MB
-                                    ->columnSpanFull()
-                                    ->panelLayout('grid')
-                                    ->openable()
-                                    ->downloadable(),
-
-
-                                FileUpload::make('camara_galeria_imagens')
-                                    ->label('Galeria de Imagens')
-                                    ->image()
-                                    ->multiple()
-                                    ->directory('historico/camara/galeria')
-                                    ->maxSize(3072) // 3MB
-                                    ->reorderable()
-                                    ->columnSpanFull()
-                                    ->panelLayout('grid')
                                     ->openable()
                                     ->downloadable()
-                                    ->maxFiles(5),
+                                    ->maxSize(3072)
+                                    ->quality(50)
+                                    ->showCompressionStats(),
+
+                                OptimizedImageUpload::make('camara_galeria_imagens')
+                                    ->label('Galeria de Imagens')
+                                    ->image()
+                                    ->imageCropAspectRatio('1:1') // Mantenha isso
+                                    ->panelLayout('grid')
+                                    ->multiple(true)
+                                    ->directory('historico/camara/galeria')
+                                    ->reorderable()
+                                    ->openable()
+                                    ->downloadable()
+                                    ->maxSize(3072) // 3MB
+                                    ->maxFiles(5)
+                                    ->multiple(true)
+                                    ->quality(50)
+                                    ->showCompressionStats()
+                                    ->helperText('Fotos adicionais que aparecerão no Histórico.'),
+
 
 
                                 Section::make('SEO')
@@ -106,8 +111,9 @@ class ManageHistorico extends SettingsPage
                                             ->addActionLabel('Adicionar Meta Tag')
                                             ->columnSpanFull(),
                                     ])
+                                    ->columnSpanFull()
                                     ->collapsed(),
-                            ]),
+                            ])->columns(),
 
                         Tab::make('História da Cidade')
                             ->icon('heroicon-o-building-office')
@@ -143,29 +149,38 @@ class ManageHistorico extends SettingsPage
 
 
 
-                                FileUpload::make('cidade_imagem_destaque')
+
+
+                                OptimizedImageUpload::make('cidade_imagem_destaque')
                                     ->label('Imagem de Destaque')
                                     ->image()
+                                    ->imageEditor()
+                                    ->multiple(false)
                                     ->directory('historico/cidade')
-                                    ->maxSize(3072) // 3MB
-                                    ->columnSpanFull()
-                                    ->panelLayout('grid')
-                                    ->openable()
-                                    ->downloadable(),
-
-
-                                FileUpload::make('cidade_galeria_imagens')
-                                    ->label('Galeria de Imagens')
-                                    ->image()
-                                    ->multiple()
-                                    ->directory('historico/cidade/galeria')
-                                    ->maxSize(3072) // 3MB
-                                    ->reorderable()
-                                    ->columnSpanFull()
-                                    ->panelLayout('grid')
                                     ->openable()
                                     ->downloadable()
-                                    ->maxFiles(5),
+                                    ->maxSize(3072)
+                                    ->quality(50)
+                                    ->showCompressionStats(),
+
+                                OptimizedImageUpload::make('cidade_galeria_imagens')
+                                    ->label('Galeria de Imagens')
+                                    ->image()
+                                    ->imageCropAspectRatio('1:1') // Mantenha isso
+                                    ->panelLayout('grid')
+                                    ->multiple(true)
+                                    ->directory('historico/cidade/galeria')
+                                    ->reorderable()
+                                    ->openable()
+                                    ->downloadable()
+                                    ->maxSize(3072) // 3MB
+                                    ->maxFiles(5)
+                                    ->multiple(true)
+                                    ->quality(50)
+                                    ->showCompressionStats()
+                                    ->helperText('Fotos adicionais que aparecerão no Histórico.'),
+
+
 
                                 Section::make('SEO')
                                     ->schema([
@@ -176,8 +191,9 @@ class ManageHistorico extends SettingsPage
                                             ->addActionLabel('Adicionar Meta Tag')
                                             ->columnSpanFull(),
                                     ])
+                                    ->columnSpanFull()
                                     ->collapsed(),
-                            ]),
+                            ])->columns(2),
                     ])
                     ->persistTabInQueryString()
                     ->columnSpanFull()

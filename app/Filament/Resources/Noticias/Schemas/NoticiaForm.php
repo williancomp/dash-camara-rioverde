@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Noticias\Schemas;
 
+use App\Filament\Forms\Components\OptimizedImageUpload;
 use App\Models\Parlamentar;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Schema;
@@ -77,30 +78,37 @@ class NoticiaForm
 
                         Tab::make('Mídia')
                             ->schema([
-                                FileUpload::make('foto_capa')
+
+                                OptimizedImageUpload::make('foto_capa')
                                     ->label('Foto de Capa')
                                     ->image()
                                     ->imageEditor()
+                                    ->multiple(false)
                                     ->directory('noticias/capas')
-                                    ->panelLayout('grid')
                                     ->openable()
                                     ->downloadable()
-                                    ->maxSize(3072),
+                                    ->maxSize(3072)
+                                    ->quality(50)
+                                    ->showCompressionStats(),
 
-                                FileUpload::make('galeria_fotos')
+                                OptimizedImageUpload::make('galeria_fotos')
                                     ->label('Galeria de Fotos')
                                     ->image()
-                                    ->multiple()
+                                    ->imageCropAspectRatio('1:1') // Mantenha isso
+                                    ->panelLayout('grid')
+                                    ->multiple(true)
                                     ->directory('noticias/galeria')
                                     ->reorderable()
-                                    ->columnSpanFull()
-                                    ->panelLayout('grid')
                                     ->openable()
                                     ->downloadable()
                                     ->maxSize(3072) // 3MB
                                     ->maxFiles(5)
+                                    ->multiple(true)
+                                    ->quality(50)
+                                    ->showCompressionStats()
                                     ->helperText('Fotos adicionais que aparecerão na notícia.'),
-                            ]),
+
+                            ])->columns(2),
 
                         Tab::make('Categorização')
                             ->schema([

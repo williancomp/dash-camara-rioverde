@@ -10,10 +10,13 @@
         "cheesegrits/filament-google-maps": "*",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-settings-plugin": "^4.0@beta",
+        "intervention/image": "^3.11",
+        "intervention/image-laravel": "^1.5",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "laravellegends/pt-br-validator": "^12.2"
+        "laravellegends/pt-br-validator": "^12.2",
+        "spatie/laravel-image-optimizer": "^1.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -18,6 +18,7 @@ use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\DateTimePicker;
 use Illuminate\Support\Str;
+use App\Filament\Forms\Components\OptimizedImageUpload;
 
 class MidiaForm
 {
@@ -29,6 +30,7 @@ class MidiaForm
                     ->tabs([
                         Tab::make('Informações Básicas')
                             ->schema([
+
                                 TextInput::make('titulo')
                                     ->required()
                                     ->maxLength(255)
@@ -50,17 +52,18 @@ class MidiaForm
                                     ->rows(3)
                                     ->columnSpanFull(),
 
-                                FileUpload::make('thumbnail')
-                                    ->label('Miniatura/Capa')
+                                OptimizedImageUpload::make('thumbnail')
+                                    ->label('Imagem Principal')
                                     ->image()
                                     ->imageEditor()
                                     ->directory('midias/thumbnails')
-                                    ->columnSpanFull()
-                                    ->panelLayout('grid')
+                                    ->quality(50)
+                                    ->showCompressionStats()
                                     ->openable()
                                     ->downloadable()
                                     ->maxSize(3072) // 3MB
                                     ->helperText('Imagem que representa o vídeo. Ideal: 1280x720px'),
+
 
                                 Select::make('tipo')
                                     ->options([

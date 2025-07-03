@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Parlamentars\Schemas;
 
+use App\Filament\Forms\Components\OptimizedImageUpload;
 use App\Models\Partido;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DatePicker;
@@ -36,15 +37,23 @@ class ParlamentarForm
                                     ->label('Nome Parlamentar (Urna)')
                                     ->columnSpanFull(),
 
-                                FileUpload::make('foto')
-                                    ->image()
+
+
+
+                                OptimizedImageUpload::make('foto')
+                                    ->label('Foto')
                                     ->avatar()
                                     ->imageEditor()
+                                    ->multiple(false)
                                     ->directory('parlamentares/fotos')
-                                    ->columnSpanFull()
                                     ->openable()
                                     ->downloadable()
-                                    ->maxSize(3072), // 3MB
+                                    ->maxSize(3072)
+                                    ->quality(50)
+                                    ->columnSpanFull()
+                                    ->showCompressionStats(),
+
+
 
                                 Textarea::make('biografia')
                                     ->rows(4)

@@ -10,22 +10,26 @@ class MapaInterativo extends Component
     public $pontos = [];
     public $mapId;
 
-    // O listener que recebe os dados da página principal
     protected $listeners = ['atualizarMapa'];
 
     public function mount($pontos = [])
     {
         $this->pontos = $pontos;
-        // Gera um ID único para o container do mapa
-        $this->mapId = 'mapa' . uniqid();
+        $this->mapId = 'mapa' . str_replace(['-', '_'], '', uniqid());
     }
 
-    // Este método é chamado pelo evento despachado de MapaVisualizador
+    // NOVO MÉTODO CHAMADO PELO WIRE:INIT
+    public function carregarDadosIniciais()
+    {
+        // Despacha os pontos iniciais para o front-end
+        $this->dispatch('pontosAtualizados', pontos: $this->pontos);
+    }
+
+
+
     public function atualizarMapa($novosPontos)
     {
         $this->pontos = $novosPontos;
-
-        // Emite um evento para o JavaScript com os novos pontos
         $this->dispatch('pontosAtualizados', pontos: $this->pontos);
     }
 

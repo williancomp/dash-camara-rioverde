@@ -31,6 +31,14 @@
                                 <x-heroicon-o-building-office class="w-4 h-4 mr-2" />
                             @elseif($key === 'legislativo')
                                 <x-heroicon-o-scale class="w-4 h-4 mr-2" />
+                            @elseif($key === 'turismo')
+                                <x-heroicon-o-globe-alt class="w-4 h-4 mr-2" />
+                            @elseif($key === 'religioso')
+                                <x-heroicon-o-map-pin class="w-4 h-4 mr-2" />
+                            @elseif($key === 'comercio_servicos')
+                                <x-heroicon-o-shopping-bag class="w-4 h-4 mr-2" />
+                            @elseif($key === 'seguranca')
+                                <x-heroicon-o-shield-check class="w-4 h-4 mr-2" />
                             @else
                                 <x-heroicon-o-map-pin class="w-4 h-4 mr-2" />
                             @endif

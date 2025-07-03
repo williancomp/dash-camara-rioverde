@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PontoInteresses\Schemas;
 
+use App\Filament\Forms\Components\OptimizedImageUpload;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -49,29 +50,40 @@ class PontoInteresseForm
                                     ->rows(3)
                                     ->columnSpanFull(),
 
-                                FileUpload::make('foto_principal')
+
+
+                                OptimizedImageUpload::make('foto_principal')
                                     ->label('Foto Principal')
                                     ->image()
                                     ->imageEditor()
+                                    ->multiple(false)
                                     ->directory('pontos-interesse/principal')
-                                    ->columnSpanFull()
-                                    ->panelLayout('grid')
-                                    ->openable()
-                                    ->downloadable()
-                                    ->maxSize(3072),
-
-                                FileUpload::make('galeria_fotos')
-                                    ->label('Galeria de Fotos')
-                                    ->image()
-                                    ->multiple()
-                                    ->directory('pontos-interesse/galeria')
-                                    ->reorderable()
-                                    ->columnSpanFull()
-                                    ->panelLayout('grid')
                                     ->openable()
                                     ->downloadable()
                                     ->maxSize(3072)
-                                    ->helperText('Fotos adicionais do local.'),
+                                    ->quality(50)
+                                    ->showCompressionStats(),
+
+                                OptimizedImageUpload::make('galeria_fotos')
+                                    ->label('Galeria de Fotos')
+                                    ->image()
+                                    ->imageCropAspectRatio('1:1') // Mantenha isso
+                                    ->imageEditor()
+                                    ->panelAspectRatio('16:9') // Mantenha isso
+                                    ->panelLayout('grid')
+                                    ->multiple(true)
+                                    ->directory('pontos-interesse/galeria')
+                                    ->reorderable()
+                                    ->openable()
+                                    ->downloadable()
+                                    ->maxSize(3072) // 3MB
+                                    ->maxFiles(5)
+                                    ->multiple(true)
+                                    ->quality(50)
+                                    ->showCompressionStats()
+                                    ->helperText('Fotos adicionais que aparecerão na notícia.'),
+
+
                             ]),
 
                         Tab::make('Localização')

@@ -114,4 +114,25 @@ class PontoInteresse extends Model
     {
         return self::getCategorias()[$this->categoria] ?? ucfirst(str_replace('_', ' ', $this->categoria));
     }
+
+    // Scopes
+    public function scopeAtivos($query)
+    {
+        return $query->where('status', 'ativo');
+    }
+
+    public function scopeVerificados($query)
+    {
+        return $query->where('verificado', true);
+    }
+
+    public function scopeDestaques($query)
+    {
+        return $query->where('destaque', true);
+    }
+
+    public function scopePorCategoria($query, $categoria)
+    {
+        return $query->where('categoria', $categoria);
+    }
 }

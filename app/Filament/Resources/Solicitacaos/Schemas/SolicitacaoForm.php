@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Solicitacaos\Schemas;
 
+use App\Filament\Forms\Components\OptimizedImageUpload;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
@@ -140,11 +141,17 @@ class SolicitacaoForm
                                     ->numeric()
                                     ->step(0.00000001),
 
+
+
                                 FileUpload::make('anexos')
                                     ->label('Fotos/Documentos')
                                     ->multiple()
+                                    ->openable()
+                                    ->downloadable()
+                                    ->maxSize(3072)
+                                    ->maxFiles(4)
                                     ->directory('solicitacoes/anexos')
-                                    ->columnSpanFull(),
+
                             ])
                             ->columns(2),
 

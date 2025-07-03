@@ -66,9 +66,12 @@ class MapaVisualizador extends Page
             'saude' => 'Saúde',
             'lazer_esporte' => 'Lazer',
             'servicos_publicos' => 'Serviços',
+            'transporte' => 'Transporte',
+            'cultura' => 'Cultura',
             'legislativo' => 'Legislativo',
             'turismo' => 'Turismo',
             'religioso' => 'Religioso',
+            'seguranca' => 'Segurança',
             'comercio_servicos' => 'Comércio'
         ];
     }
