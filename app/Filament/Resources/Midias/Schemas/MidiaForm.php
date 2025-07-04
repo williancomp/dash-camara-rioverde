@@ -53,7 +53,6 @@ class MidiaForm
                                     ->columnSpanFull(),
 
                                 OptimizedImageUpload::make('thumbnail')
-                                    ->disk('public')
                                     ->label('Imagem Principal')
                                     ->image()
                                     ->imageEditor()

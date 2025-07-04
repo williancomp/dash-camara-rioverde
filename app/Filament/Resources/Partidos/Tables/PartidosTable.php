@@ -21,7 +21,6 @@ class PartidosTable
         return $table
             ->columns([
                 ImageColumn::make('logo')
-                    ->disk('public')
                     ->circular()
                     ->imageSize(40),
 

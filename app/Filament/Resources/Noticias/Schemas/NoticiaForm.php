@@ -80,7 +80,6 @@ class NoticiaForm
                             ->schema([
 
                                 OptimizedImageUpload::make('foto_capa')
-                                    ->disk('public')
                                     ->label('Foto de Capa')
                                     ->image()
                                     ->imageEditor()
@@ -93,7 +92,6 @@ class NoticiaForm
                                     ->showCompressionStats(),
 
                                 OptimizedImageUpload::make('galeria_fotos')
-                                    ->disk('public')
                                     ->label('Galeria de Fotos')
                                     ->image()
                                     ->imageCropAspectRatio('1:1') // Mantenha isso

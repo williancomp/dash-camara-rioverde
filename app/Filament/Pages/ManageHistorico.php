@@ -150,7 +150,6 @@ class ManageHistorico extends SettingsPage
                                     ]),
 
                                 OptimizedImageUpload::make('cidade_imagem_destaque')
-                                    ->disk('public')
                                     ->label('Imagem de Destaque')
                                     ->image()
                                     ->imageEditor()
@@ -163,7 +162,6 @@ class ManageHistorico extends SettingsPage
                                     ->showCompressionStats(),
 
                                 OptimizedImageUpload::make('cidade_galeria_imagens')
-                                    ->disk('public')
                                     ->label('Galeria de Imagens')
                                     ->image()
                                     ->imageCropAspectRatio('1:1') // Mantenha isso

@@ -29,7 +29,6 @@ class MidiasTable
         return $table
             ->columns([
                 ImageColumn::make('thumbnail')
-                    ->disk('public')
                     ->label('Capa')
                     ->imageSize(60)
                     ->visibility('private')
