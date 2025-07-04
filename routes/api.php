@@ -49,8 +49,9 @@ Route::prefix('noticias')->group(function () {
         return response()->json($destaques);
     });
 
-    Route::get('/{slug}', function ($slug) {
-        $noticia = \App\Models\Noticia::where('slug', $slug)
+    // Rota simples por ID
+    Route::get('/{id}', function ($id) {
+        $noticia = \App\Models\Noticia::where('id', $id)
             ->where('status', 'publicado')
             ->with(['autorParlamentar', 'projetoRelacionado', 'eventoRelacionado'])
             ->firstOrFail();
@@ -58,7 +59,8 @@ Route::prefix('noticias')->group(function () {
         $noticia->incrementarVisualizacoes();
 
         return response()->json($noticia);
-    });
+    })->where('id', '[0-9]+'); // Garantir que só aceita números
+
 });
 
 
