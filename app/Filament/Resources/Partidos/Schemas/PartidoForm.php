@@ -37,6 +37,7 @@ class PartidoForm
                             ->label('Cor Oficial'),
 
                         OptimizedImageUpload::make('logo')
+                            ->disk('public')
                             ->label('Logo do Partido')
                             ->image()
                             ->imageEditor()

@@ -59,48 +59,6 @@ class Noticia extends Model
         'permitir_comentarios' => 'boolean',
     ];
 
-
-    // Sobrescrever o accessor foto_capa
-    public function getFotoCapaAttribute($value)
-    {
-        if (!$value) {
-            return null;
-        }
-
-        // Retornar URL temporária em vez do caminho
-        return Storage::temporaryUrl(
-            $value,
-            now()->addDay()
-        );
-    }
-
-    // Novo accessor para galeria_fotos
-    public function getGaleriaFotosAttribute($value)
-    {
-        if (!$value) {
-            return [];
-        }
-
-        // Decodificar o JSON se necessário
-        $fotos = is_string($value) ? json_decode($value, true) : $value;
-
-        if (!is_array($fotos) || empty($fotos)) {
-            return [];
-        }
-
-        // Converter cada path em URL assinada
-        return array_map(function ($foto) {
-            try {
-                return Storage::temporaryUrl($foto, now()->addDay());
-            } catch (\Exception $e) {
-                Log::error('Erro ao gerar URL para galeria: ' . $e->getMessage());
-                return $foto; // Retorna o path original em caso de erro
-            }
-        }, $fotos);
-    }
-
-
-
     // Relacionamentos
     public function autorParlamentar(): BelongsTo
     {

@@ -53,6 +53,7 @@ class PontoInteresseForm
 
 
                                 OptimizedImageUpload::make('foto_principal')
+                                    ->disk('public')
                                     ->label('Foto Principal')
                                     ->image()
                                     ->imageEditor()
@@ -65,6 +66,7 @@ class PontoInteresseForm
                                     ->showCompressionStats(),
 
                                 OptimizedImageUpload::make('galeria_fotos')
+                                    ->disk('public')
                                     ->label('Galeria de Fotos')
                                     ->image()
                                     ->imageCropAspectRatio('1:1') // Mantenha isso

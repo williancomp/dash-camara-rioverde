@@ -41,6 +41,7 @@ class ParlamentarForm
 
 
                                 OptimizedImageUpload::make('foto')
+                                    ->disk('public')
                                     ->label('Foto')
                                     ->avatar()
                                     ->imageEditor()

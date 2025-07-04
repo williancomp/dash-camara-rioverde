@@ -21,6 +21,7 @@ class ParlamentarsTable
         return $table
             ->columns([
                 ImageColumn::make('foto')
+                    ->disk('public')
                     ->circular()
                     ->imageSize(50),
 

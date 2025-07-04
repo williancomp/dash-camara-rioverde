@@ -29,8 +29,9 @@ class MidiasTable
         return $table
             ->columns([
                 ImageColumn::make('thumbnail')
+                    ->disk('public')
                     ->label('Capa')
-                    ->size(60)
+                    ->imageSize(60)
                     ->visibility('private')
                     ->hidden(fn($record): bool => empty($record->thumbnail))
                     ->toggleable(isToggledHiddenByDefault: true),
