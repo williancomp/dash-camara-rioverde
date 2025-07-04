@@ -145,6 +145,8 @@ class SolicitacaoForm
 
                                 FileUpload::make('anexos')
                                     ->label('Fotos/Documentos')
+                                    ->disk('public')
+                                    ->visibility('public')
                                     ->multiple()
                                     ->openable()
                                     ->downloadable()

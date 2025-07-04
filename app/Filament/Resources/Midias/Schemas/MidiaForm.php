@@ -54,6 +54,8 @@ class MidiaForm
 
                                 OptimizedImageUpload::make('thumbnail')
                                     ->label('Imagem Principal')
+                                    ->disk('public')
+                                    ->visibility('public')
                                     ->image()
                                     ->imageEditor()
                                     ->directory('midias/thumbnails')

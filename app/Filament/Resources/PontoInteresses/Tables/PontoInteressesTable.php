@@ -25,6 +25,7 @@ class PontoInteressesTable
             ->columns([
                 ImageColumn::make('foto_principal')
                     ->circular()
+                    ->disk('public')
                     ->imageSize(50)
                     ->visibility('private')
                     ->hidden(fn($record): bool => empty($record->foto_principal))

@@ -24,6 +24,7 @@ class OptimizedImageUpload extends FileUpload
         $this
             ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'])
             ->maxSize(20480)
+
             ->saveUploadedFileUsing(function ($file) {
                 return $this->optimizeImage(
                     file: $file,

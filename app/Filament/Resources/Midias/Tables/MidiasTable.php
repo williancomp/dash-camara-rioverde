@@ -30,6 +30,7 @@ class MidiasTable
             ->columns([
                 ImageColumn::make('thumbnail')
                     ->label('Capa')
+                    ->disk('public')
                     ->imageSize(60)
                     ->visibility('private')
                     ->hidden(fn($record): bool => empty($record->thumbnail))

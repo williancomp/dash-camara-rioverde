@@ -22,6 +22,7 @@ class ParlamentarsTable
             ->columns([
                 ImageColumn::make('foto')
                     ->circular()
+                    ->disk('public')
                     ->imageSize(50),
 
                 TextColumn::make('nome_parlamentar')

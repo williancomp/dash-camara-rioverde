@@ -38,6 +38,8 @@ class PartidoForm
 
                         OptimizedImageUpload::make('logo')
                             ->label('Logo do Partido')
+                            ->disk('public')
+                            ->visibility('public')
                             ->image()
                             ->imageEditor()
                             ->multiple(false)

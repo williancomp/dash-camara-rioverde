@@ -22,6 +22,7 @@ class PartidosTable
             ->columns([
                 ImageColumn::make('logo')
                     ->circular()
+                    ->disk('public')
                     ->imageSize(40),
 
                 TextColumn::make('sigla')

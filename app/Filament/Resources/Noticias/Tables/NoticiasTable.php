@@ -28,6 +28,7 @@ class NoticiasTable
             ->columns([
                 ImageColumn::make('foto_capa')
                     ->label('Capa')
+                    ->disk('public')
                     ->circular()
                     ->imageSize(50),
 
