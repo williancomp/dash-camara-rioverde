@@ -237,7 +237,7 @@ Route::prefix('historia')->group(function () {
 });
 
 Route::prefix('rota-teste')->group(function () {
-    Route::get('/camara', function (Request $request) {
+    Route::get('/', function (Request $request) {
         return "Rota testada....";
     });
 });
