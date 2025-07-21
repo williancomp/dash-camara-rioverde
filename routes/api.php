@@ -1,5 +1,6 @@
 <?php
 
+use App\Settings\HistoricoSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +25,6 @@ Route::get('/transmissao/status', function () {
 });
 
 
-// routes/api.php
 Route::prefix('noticias')->group(function () {
     Route::get('/', function () {
         $noticias = \App\Models\Noticia::publicadas()
@@ -35,18 +35,6 @@ Route::prefix('noticias')->group(function () {
             ->paginate(20);
 
         return response()->json($noticias);
-    });
-
-    Route::get('/destaques', function () {
-        $destaques = \App\Models\Noticia::publicadas()
-            ->destaques()
-            ->with(['autorParlamentar'])
-            ->orderBy('ordem_destaque')
-            ->orderBy('data_publicacao', 'desc')
-            ->limit(5)
-            ->get();
-
-        return response()->json($destaques);
     });
 
     // Rota simples por ID
@@ -64,7 +52,31 @@ Route::prefix('noticias')->group(function () {
 });
 
 
-// routes/api.php
+Route::prefix('parlamentares')->group(function () {
+
+    // Rota principal: listar parlamentares
+    Route::get('/', function () {
+        $parlamentares = \App\Models\Parlamentar::where('ativo_app', true)
+            ->with(['partido', 'projetosAutor', 'projetosCoautor'])
+            ->orderBy('ordem_exibicao', 'asc')
+            ->paginate(20);
+
+        return response()->json($parlamentares);
+    });
+
+    // Rota simples por ID
+    Route::get('/{id}', function ($id) {
+        $parlamentar = \App\Models\Parlamentar::where('id', $id)
+            ->where('ativo_app', true)
+            ->with(['partido', 'projetosAutor', 'projetosCoautor'])
+            ->firstOrFail();
+
+        return response()->json($parlamentar);
+    })->where('id', '[0-9]+'); // Garantir que só aceita números
+
+});
+
+
 Route::prefix('midias')->group(function () {
     Route::get('/', function () {
         $midias = \App\Models\Midia::ativas()
@@ -77,54 +89,9 @@ Route::prefix('midias')->group(function () {
 
         return response()->json($midias);
     });
-
-    Route::get('/destaques', function () {
-        $destaques = \App\Models\Midia::ativas()
-            ->disponiveisApp()
-            ->destaques()
-            ->orderBy('ordem_exibicao')
-            ->orderBy('data_evento', 'desc')
-            ->limit(10)
-            ->get();
-
-        return response()->json($destaques);
-    });
-
-    Route::get('/por-tipo/{tipo}', function ($tipo) {
-        $midias = \App\Models\Midia::ativas()
-            ->disponiveisApp()
-            ->porTipo($tipo)
-            ->orderBy('data_evento', 'desc')
-            ->paginate(20);
-
-        return response()->json($midias);
-    });
-
-    Route::get('/por-ano/{ano}', function ($ano) {
-        $midias = \App\Models\Midia::ativas()
-            ->disponiveisApp()
-            ->porAno($ano)
-            ->orderBy('data_evento', 'desc')
-            ->paginate(20);
-
-        return response()->json($midias);
-    });
-
-    Route::get('/{slug}', function ($slug) {
-        $midia = \App\Models\Midia::where('slug', $slug)
-            ->ativas()
-            ->disponiveisApp()
-            ->with(['eventoRelacionado'])
-            ->firstOrFail();
-
-        $midia->incrementarVisualizacoes();
-
-        return response()->json($midia);
-    });
 });
 
 
-// routes/api.php
 Route::prefix('ouvidoria')->group(function () {
     // Enviar nova solicitação
     Route::post('/solicitacoes', function (Request $request) {
@@ -167,5 +134,104 @@ Route::prefix('ouvidoria')->group(function () {
             ->paginate(20);
 
         return response()->json($solicitacoes);
+    });
+});
+
+
+
+Route::prefix('eventos')->group(function () {
+
+    // Listar todos os eventos (para popular o table_calendar)
+    Route::get('/', function (Request $request) {
+        $eventos = \App\Models\Evento::publicos()
+            ->with(['projetoRelacionado'])
+            ->orderBy('data', 'asc')
+            ->orderBy('hora_inicio', 'asc')
+            ->get()
+            ->map(function ($evento) {
+                return [
+                    'id' => $evento->id,
+                    'titulo' => $evento->titulo,
+                    'descricao' => $evento->descricao,
+                    'data' => $evento->data->format('Y-m-d'),
+                    'hora_inicio' => $evento->hora_inicio ? $evento->hora_inicio->format('H:i') : null,
+                    'hora_fim' => $evento->hora_fim ? $evento->hora_fim->format('H:i') : null,
+                    'dia_todo' => $evento->dia_todo,
+                    'tipo' => $evento->tipo,
+                    'tipo_label' => $evento->tipo_label,
+                    'local' => $evento->local,
+                    'cor_evento' => $evento->cor_evento,
+                    'status' => $evento->status,
+                    'destaque' => $evento->destaque,
+                ];
+            });
+
+        return response()->json($eventos);
+    });
+
+    // Buscar evento específico por ID (para ver detalhes)
+    Route::get('/{id}', function ($id) {
+        $evento = \App\Models\Evento::where('id', $id)
+            ->publicos()
+            ->with(['projetoRelacionado'])
+            ->firstOrFail();
+
+        // Adicionar parlamentares relacionados
+        $evento->append(['parlamentares']);
+
+        return response()->json([
+            'id' => $evento->id,
+            'titulo' => $evento->titulo,
+            'descricao' => $evento->descricao,
+            'detalhes' => $evento->detalhes,
+            'data' => $evento->data->format('Y-m-d'),
+            'data_formatada' => $evento->data_formatada,
+            'hora_inicio' => $evento->hora_inicio ? $evento->hora_inicio->format('H:i') : null,
+            'hora_fim' => $evento->hora_fim ? $evento->hora_fim->format('H:i') : null,
+            'horario_formatado' => $evento->horario_formatado,
+            'dia_todo' => $evento->dia_todo,
+            'tipo' => $evento->tipo,
+            'tipo_label' => $evento->tipo_label,
+            'local' => $evento->local,
+            'endereco' => $evento->endereco,
+            'cor_evento' => $evento->cor_evento,
+            'status' => $evento->status,
+            'status_label' => $evento->status_label,
+            'publico' => $evento->publico,
+            'transmissao_online' => $evento->transmissao_online,
+            'link_transmissao' => $evento->link_transmissao,
+            'observacoes' => $evento->observacoes,
+            'anexos' => $evento->anexos,
+            'destaque' => $evento->destaque,
+            'parlamentares' => $evento->parlamentares,
+            'projeto_relacionado' => $evento->projetoRelacionado,
+            'created_at' => $evento->created_at,
+            'updated_at' => $evento->updated_at,
+        ]);
+    })->where('id', '[0-9]+');
+});
+
+Route::prefix('historia')->group(function () {
+    Route::get('/camara', function (Request $request) {
+        $settings = app(HistoricoSettings::class);
+
+        return response()->json([
+            'titulo' => $settings->camara_titulo,
+            'subtitulo' => $settings->camara_subtitulo,
+            'conteudo' => $settings->camara_conteudo,
+            'imagem_destaque' => $settings->camara_imagem_destaque,
+            'galeria_imagens' => $settings->camara_galeria_imagens,
+        ]);
+    });
+    Route::get('/cidade', function (Request $request) {
+        $settings = app(HistoricoSettings::class);
+
+        return response()->json([
+            'titulo' => $settings->cidade_titulo,
+            'subtitulo' => $settings->cidade_subtitulo,
+            'conteudo' => $settings->cidade_conteudo,
+            'imagem_destaque' => $settings->cidade_imagem_destaque,
+            'galeria_imagens' => $settings->cidade_galeria_imagens,
+        ]);
     });
 });
