@@ -238,6 +238,6 @@ Route::prefix('historia')->group(function () {
 
 Route::prefix('rota-teste')->group(function () {
     Route::get('/', function (Request $request) {
-        return "Rota testada...., muito bem..";
+        return "Rota testada....";
     });
 });
