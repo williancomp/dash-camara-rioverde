@@ -62,7 +62,7 @@ Route::prefix('noticias')->group(function () {
             ->orderBy('breaking_news', 'desc')
             ->orderBy('ordem_destaque')
             ->orderBy('data_publicacao', 'desc')
-            ->get(); // Usamos get() para obter todos os resultados para mesclagem
+            ->get();
 
         // 2. Buscar notícias do feed RSS da Câmara
         $response = Http::get('https://rioverde.go.leg.br/feed/');
@@ -74,29 +74,61 @@ Route::prefix('noticias')->group(function () {
                 // Extrai a primeira imagem do conteúdo HTML
                 $content = (string)$item->children('content', true)->encoded;
                 $doc = new DOMDocument();
-                @$doc->loadHTML($content);
+                @$doc->loadHTML('<?xml encoding="utf-8" ?>' . $content);
                 $imgTags = $doc->getElementsByTagName('img');
                 $imagem = $imgTags->length > 0 ? $imgTags->item(0)->getAttribute('src') : null;
 
+                // **CORREÇÃO: Extrai o ID numérico da GUID**
+                $guid = (string)$item->guid;
+                parse_str(parse_url($guid, PHP_URL_QUERY), $query);
+                $id = isset($query['p']) ? (int)$query['p'] : -abs(crc32($guid)); // Usa o ID do post ou um hash negativo como fallback
+
+                // **CORREÇÃO: Padroniza a estrutura do objeto**
                 $noticiasExternas[] = [
-                    'id' => (string)$item->guid,
+                    'id' => $id,
                     'titulo' => (string)$item->title,
-                    'resumo' => (string)$item->description,
+                    'slug' => Str::slug((string)$item->title) . '-' . $id,
+                    'resumo' => strip_tags((string)$item->description),
                     'conteudo' => $content,
-                    'imagem_destaque' => $imagem,
+                    'foto_capa' => $imagem,
+                    'galeria_fotos' => null,
+                    'categoria' => 'geral',
+                    'tags' => null,
+                    'autor_parlamentar_id' => null,
+                    'parlamentares_relacionados' => null,
+                    'projeto_relacionado_id' => null,
+                    'evento_relacionado_id' => null,
+                    'status' => 'publicado',
                     'data_publicacao' => Carbon::parse((string)$item->pubDate)->toDateTimeString(),
+                    'data_agendamento' => null,
+                    'meta_title' => (string)$item->title,
+                    'meta_description' => strip_tags((string)$item->description),
                     'fonte' => 'Câmara Municipal de Rio Verde',
+                    'destaque' => false,
+                    'breaking_news' => false,
+                    'notificar_usuarios' => false,
+                    'ordem_destaque' => 0,
+                    'permitir_comentarios' => false,
+                    'visualizacoes' => 0,
+                    'curtidas' => 0,
+                    'compartilhamentos' => 0,
+                    'editor_nome' => null,
+                    'editor_email' => null,
+                    'created_at' => Carbon::parse((string)$item->pubDate)->toDateTimeString(),
+                    'updated_at' => Carbon::parse((string)$item->pubDate)->toDateTimeString(),
                     'link_externo' => (string)$item->link,
+                    'autor_parlamentar' => null,
+                    'projeto_relacionado' => null,
                 ];
             }
         }
 
         // 3. Mesclar as notícias
         $noticiasMescladas = collect($noticiasDoPainel)->map(function ($noticia) {
-            // Adiciona um campo para diferenciar a origem e garantir a consistência
             $noticia->fonte = 'Painel Administrativo';
             return $noticia;
         })->concat($noticiasExternas);
+
 
         // 4. Ordenar todas as notícias por data de publicação em ordem decrescente
         $noticiasOrdenadas = $noticiasMescladas->sortByDesc('data_publicacao')->values();
@@ -104,9 +136,9 @@ Route::prefix('noticias')->group(function () {
         // 5. Retornar o resultado paginado
         $porPagina = 20;
         $paginaAtual = request()->get('page', 1);
-        $itensPaginados = $noticiasOrdenadas->slice(($paginaAtual - 1) * $porPagina, $porPagina)->values();
+        $itensPaginados = $noticiasOrdenadas->slice(($paginaAtual - 1) * $porPagina, $porPagina);
         $paginador = new \Illuminate\Pagination\LengthAwarePaginator(
-            $itensPaginados,
+            $itensPaginados->values(),
             $noticiasOrdenadas->count(),
             $porPagina,
             $paginaAtual,
