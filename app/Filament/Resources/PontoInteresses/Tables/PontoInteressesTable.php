@@ -28,8 +28,7 @@ class PontoInteressesTable
                     ->disk('public')
                     ->imageSize(50)
                     ->visibility('private')
-                    ->hidden(fn($record): bool => empty($record->foto_principal))
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
 
                 TextColumn::make('nome')
                     ->searchable()
