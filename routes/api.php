@@ -78,19 +78,17 @@ Route::prefix('noticias')->group(function () {
                 $imgTags = $doc->getElementsByTagName('img');
                 $imagem = $imgTags->length > 0 ? $imgTags->item(0)->getAttribute('src') : null;
 
-                // **CORREÇÃO: Extrai o ID numérico da GUID**
                 $guid = (string)$item->guid;
                 parse_str(parse_url($guid, PHP_URL_QUERY), $query);
-                $id = isset($query['p']) ? (int)$query['p'] : -abs(crc32($guid)); // Usa o ID do post ou um hash negativo como fallback
+                $id = isset($query['p']) ? (int)$query['p'] : -abs(crc32($guid));
 
-                // **CORREÇÃO: Padroniza a estrutura do objeto**
                 $noticiasExternas[] = [
                     'id' => $id,
                     'titulo' => (string)$item->title,
                     'slug' => Str::slug((string)$item->title) . '-' . $id,
                     'resumo' => strip_tags((string)$item->description),
                     'conteudo' => $content,
-                    'foto_capa' => $imagem,
+                    'foto_capa' => $imagem, // Já é uma URL completa
                     'galeria_fotos' => null,
                     'categoria' => 'geral',
                     'tags' => null,
@@ -126,6 +124,8 @@ Route::prefix('noticias')->group(function () {
         // 3. Mesclar as notícias
         $noticiasMescladas = collect($noticiasDoPainel)->map(function ($noticia) {
             $noticia->fonte = 'Painel Administrativo';
+            // **CORREÇÃO 1: Garante que a URL da imagem seja sempre completa**
+            $noticia->foto_capa = $noticia->foto_capa ? Storage::url($noticia->foto_capa) : null;
             return $noticia;
         })->concat($noticiasExternas);
 
@@ -150,17 +150,83 @@ Route::prefix('noticias')->group(function () {
     });
 
 
-    // Rota simples por ID
+    // **CORREÇÃO 2: Rota de detalhe agora busca em ambas as fontes**
     Route::get('/{id}', function ($id) {
-        $noticia = \App\Models\Noticia::where('id', $id)
+        // Primeiro, tenta buscar no banco de dados local
+        $noticia = \App\Models\Noticia::with(['autorParlamentar', 'projetoRelacionado', 'eventoRelacionado'])
             ->where('status', 'publicado')
-            ->with(['autorParlamentar', 'projetoRelacionado', 'eventoRelacionado'])
-            ->firstOrFail();
+            ->find($id);
 
-        $noticia->incrementarVisualizacoes();
+        if ($noticia) {
+            $noticia->incrementarVisualizacoes();
+            // Garante que a URL da imagem local seja completa também na tela de detalhes
+            $noticia->foto_capa = $noticia->foto_capa ? Storage::url($noticia->foto_capa) : null;
+            return response()->json($noticia);
+        }
 
-        return response()->json($noticia);
-    })->where('id', '[0-9]+'); // Garantir que só aceita números
+        // Se não encontrou, busca no feed RSS
+        $response = Http::get('https://rioverde.go.leg.br/feed/');
+        if ($response->successful()) {
+            $xml = simplexml_load_string($response->body());
+            foreach ($xml->channel->item as $item) {
+                $guid = (string)$item->guid;
+                parse_str(parse_url($guid, PHP_URL_QUERY), $query);
+                $itemId = isset($query['p']) ? (int)$query['p'] : -abs(crc32($guid));
+
+                if ($itemId == $id) {
+                    // Encontrou a notícia no feed, monta o objeto completo e retorna
+                    $content = (string)$item->children('content', true)->encoded;
+                    $doc = new DOMDocument();
+                    @$doc->loadHTML('<?xml encoding="utf-8" ?>' . $content);
+                    $imgTags = $doc->getElementsByTagName('img');
+                    $imagem = $imgTags->length > 0 ? $imgTags->item(0)->getAttribute('src') : null;
+
+                    $noticiaExterna = [
+                        'id' => $itemId,
+                        'titulo' => (string)$item->title,
+                        'slug' => Str::slug((string)$item->title) . '-' . $itemId,
+                        'resumo' => strip_tags((string)$item->description),
+                        'conteudo' => $content,
+                        'foto_capa' => $imagem,
+                        'galeria_fotos' => null,
+                        'categoria' => 'geral',
+                        'tags' => null,
+                        'autor_parlamentar_id' => null,
+                        'parlamentares_relacionados' => null,
+                        'projeto_relacionado_id' => null,
+                        'evento_relacionado_id' => null,
+                        'status' => 'publicado',
+                        'data_publicacao' => Carbon::parse((string)$item->pubDate)->toDateTimeString(),
+                        'data_agendamento' => null,
+                        'meta_title' => (string)$item->title,
+                        'meta_description' => strip_tags((string)$item->description),
+                        'fonte' => 'Câmara Municipal de Rio Verde',
+                        'destaque' => false,
+                        'breaking_news' => false,
+                        'notificar_usuarios' => false,
+                        'ordem_destaque' => 0,
+                        'permitir_comentarios' => false,
+                        'visualizacoes' => 0,
+                        'curtidas' => 0,
+                        'compartilhamentos' => 0,
+                        'editor_nome' => null,
+                        'editor_email' => null,
+                        'created_at' => Carbon::parse((string)$item->pubDate)->toDateTimeString(),
+                        'updated_at' => Carbon::parse((string)$item->pubDate)->toDateTimeString(),
+                        'link_externo' => (string)$item->link,
+                        'autor_parlamentar' => null,
+                        'projeto_relacionado' => null,
+                    ];
+
+                    return response()->json($noticiaExterna);
+                }
+            }
+        }
+
+        // Se não encontrou em nenhuma das fontes
+        return response()->json(['message' => 'Notícia não encontrada.'], 404);
+
+    });
 
 });
 
