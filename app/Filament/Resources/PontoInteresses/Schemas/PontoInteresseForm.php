@@ -19,10 +19,79 @@ use Illuminate\Support\Str;
 
 class PontoInteresseForm
 {
-
-
     public static function configure(Schema $schema): Schema
     {
+        // Função auxiliar para obter as subcategorias
+        $getSubcategories = function (Get $get): array {
+            return match ($get('categoria')) {
+                'educacao' => [
+                    'escola_municipal' => 'Escola Municipal',
+                    'escola_estadual' => 'Escola Estadual',
+                    'escola_particular' => 'Escola Particular',
+                    'creche' => 'Creche',
+                    'universidade' => 'Universidade',
+                    'biblioteca' => 'Biblioteca',
+                ],
+                'saude' => [
+                    'ubs_posto_saude' => 'UBS/Posto de Saúde',
+                    'hospital' => 'Hospital',
+                    'clinica' => 'Clínica',
+                    'farmacia_popular' => 'Farmácia Popular',
+                    'consultorio' => 'Consultório',
+                ],
+                'lazer_esporte' => [
+                    'praca' => 'Praça',
+                    'parque' => 'Parque',
+                    'quadra_esportiva' => 'Quadra Esportiva',
+                    'ginasio' => 'Ginásio',
+                    'campo_futebol' => 'Campo de Futebol',
+                    'pista_caminhada' => 'Pista de Caminhada',
+                    'playground' => 'Playground',
+                ],
+                'servicos_publicos' => [
+                    'prefeitura' => 'Prefeitura',
+                    'cartorio' => 'Cartório',
+                    'correios' => 'Correios',
+                    'banco' => 'Banco',
+                    'caixa_eletronico' => 'Caixa Eletrônico',
+                    'detran' => 'DETRAN',
+                    'forum' => 'Fórum',
+                    'defensoria' => 'Defensoria Pública',
+                ],
+                'transporte' => [
+                    'ponto_onibus' => 'Ponto de Ônibus',
+                    'terminal_rodoviario' => 'Terminal Rodoviário',
+                    'taxi' => 'Ponto de Táxi',
+                    'estacionamento' => 'Estacionamento Público',
+                ],
+                'seguranca' => [
+                    'delegacia' => 'Delegacia',
+                    'quartel_bombeiros' => 'Quartel dos Bombeiros',
+                    'guarda_municipal' => 'Guarda Municipal',
+                    'conselho_tutelar' => 'Conselho Tutelar',
+                ],
+                'cultura' => [
+                    'centro_cultural' => 'Centro Cultural',
+                    'museu' => 'Museu',
+                    'teatro' => 'Teatro',
+                    'cinema' => 'Cinema',
+                    'casa_cultura' => 'Casa de Cultura',
+                ],
+                'legislativo' => [
+                    'camara_municipal' => 'Câmara Municipal',
+                    'gabinete_vereador' => 'Gabinete de Vereador',
+                    'plenario' => 'Plenário',
+                ],
+                'obras_andamento' => [
+                    'obra_pavimentacao' => 'Pavimentação',
+                    'obra_saneamento' => 'Saneamento',
+                    'obra_construcao' => 'Construção',
+                    'obra_reforma' => 'Reforma',
+                ],
+                default => [],
+            };
+        };
+
         return $schema
             ->components([
                 Tabs::make('Dados do Ponto de Interesse')
@@ -177,78 +246,11 @@ class PontoInteresseForm
                                     ->required()
                                     ->live(),
 
+                                // CAMPO CORRIGIDO
                                 Select::make('subcategoria')
-                                    ->options(function (Get $get) {
-                                        return match ($get('categoria')) {
-                                            'educacao' => [
-                                                'escola_municipal' => 'Escola Municipal',
-                                                'escola_estadual' => 'Escola Estadual',
-                                                'escola_particular' => 'Escola Particular',
-                                                'creche' => 'Creche',
-                                                'universidade' => 'Universidade',
-                                                'biblioteca' => 'Biblioteca',
-                                            ],
-                                            'saude' => [
-                                                'ubs_posto_saude' => 'UBS/Posto de Saúde',
-                                                'hospital' => 'Hospital',
-                                                'clinica' => 'Clínica',
-                                                'farmacia_popular' => 'Farmácia Popular',
-                                                'consultorio' => 'Consultório',
-                                            ],
-                                            'lazer_esporte' => [
-                                                'praca' => 'Praça',
-                                                'parque' => 'Parque',
-                                                'quadra_esportiva' => 'Quadra Esportiva',
-                                                'ginasio' => 'Ginásio',
-                                                'campo_futebol' => 'Campo de Futebol',
-                                                'pista_caminhada' => 'Pista de Caminhada',
-                                                'playground' => 'Playground',
-                                            ],
-                                            'servicos_publicos' => [
-                                                'prefeitura' => 'Prefeitura',
-                                                'cartorio' => 'Cartório',
-                                                'correios' => 'Correios',
-                                                'banco' => 'Banco',
-                                                'caixa_eletronico' => 'Caixa Eletrônico',
-                                                'detran' => 'DETRAN',
-                                                'forum' => 'Fórum',
-                                                'defensoria' => 'Defensoria Pública',
-                                            ],
-                                            'transporte' => [
-                                                'ponto_onibus' => 'Ponto de Ônibus',
-                                                'terminal_rodoviario' => 'Terminal Rodoviário',
-                                                'taxi' => 'Ponto de Táxi',
-                                                'estacionamento' => 'Estacionamento Público',
-                                            ],
-                                            'seguranca' => [
-                                                'delegacia' => 'Delegacia',
-                                                'quartel_bombeiros' => 'Quartel dos Bombeiros',
-                                                'guarda_municipal' => 'Guarda Municipal',
-                                                'conselho_tutelar' => 'Conselho Tutelar',
-                                            ],
-                                            'cultura' => [
-                                                'centro_cultural' => 'Centro Cultural',
-                                                'museu' => 'Museu',
-                                                'teatro' => 'Teatro',
-                                                'cinema' => 'Cinema',
-                                                'casa_cultura' => 'Casa de Cultura',
-                                            ],
-                                            'legislativo' => [
-                                                'camara_municipal' => 'Câmara Municipal',
-                                                'gabinete_vereador' => 'Gabinete de Vereador',
-                                                'plenario' => 'Plenário',
-                                            ],
-                                            'obras_andamento' => [
-                                                'obra_pavimentacao' => 'Pavimentação',
-                                                'obra_saneamento' => 'Saneamento',
-                                                'obra_construcao' => 'Construção',
-                                                'obra_reforma' => 'Reforma',
-                                            ],
-                                            default => [],
-                                        };
-                                    })
-                                    ->required()
-                                    ->visible(fn(Get $get): bool => !empty($get('categoria'))),
+                                    ->options($getSubcategories)
+                                    ->required(fn(Get $get): bool => !empty($getSubcategories($get)))
+                                    ->visible(fn(Get $get): bool => !empty($getSubcategories($get))),
 
                                 Select::make('status')
                                     ->options([

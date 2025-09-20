@@ -142,7 +142,7 @@ return new class extends Migration
                 'farmacia',
                 'posto_combustivel',
                 'loja'
-            ]);
+            ])->nullable();
 
             // Informações de contato
             $table->string('telefone')->nullable();
