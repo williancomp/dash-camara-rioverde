@@ -22,7 +22,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-
 class AdminPanelProvider extends PanelProvider
 {
 
@@ -31,6 +30,10 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->spa()
+            ->topbar(true)
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->passwordReset()
+            ->authGuard('web')
             ->default()
             ->id('admin')
             ->path('admin')
